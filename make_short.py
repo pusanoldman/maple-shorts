@@ -221,6 +221,25 @@ def choose_font_path(assets_dir):
     return DEFAULT_KOREAN_FONT
 
 
+def choose_bgm_path(assets_dir):
+    """
+    BGM 파일 경로를 고릅니다.
+
+    기본은 assets/bgm.mp3 입니다.
+    다만 Windows에서 확장자 숨김 상태로 이름을 바꾸면 bgm.mp3.mp3처럼 저장되는 경우가 있어,
+    정확한 bgm.mp3가 없어도 assets 폴더에 mp3가 하나뿐이면 그 파일을 BGM으로 사용합니다.
+    """
+    exact_bgm = assets_dir / "bgm.mp3"
+    if exact_bgm.exists():
+        return exact_bgm
+
+    mp3_files = sorted(assets_dir.glob("*.mp3"))
+    if len(mp3_files) == 1:
+        return mp3_files[0]
+
+    return None
+
+
 def ffmpeg_filter_path(path):
     """
     FFmpeg drawtext의 fontfile 옵션에 넣을 경로를 안전하게 바꿉니다.
@@ -478,9 +497,12 @@ def process_records():
         return
 
     font_path = choose_font_path(ASSETS_DIR)
-    bgm_path = ASSETS_DIR / "bgm.mp3"
-    if not bgm_path.exists():
-        bgm_path = None
+    bgm_path = choose_bgm_path(ASSETS_DIR)
+
+    if bgm_path:
+        print(f"[안내] BGM 사용: {bgm_path.name}")
+    else:
+        print("[안내] BGM 없음: 원본 영상 소리만 사용합니다.")
 
     records = read_records(RECORDS_CSV)
     if not records:

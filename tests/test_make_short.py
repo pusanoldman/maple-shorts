@@ -82,6 +82,26 @@ class MapleShortsTests(unittest.TestCase):
 
             self.assertEqual(make_short.choose_font_path(assets_dir), custom_font)
 
+    def test_choose_bgm_path_accepts_single_mp3_even_when_name_has_double_extension(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            assets_dir = Path(tmp) / "assets"
+            assets_dir.mkdir()
+            bgm_path = assets_dir / "bgm.mp3.mp3"
+            bgm_path.write_bytes(b"fake mp3")
+
+            self.assertEqual(make_short.choose_bgm_path(assets_dir), bgm_path)
+
+    def test_choose_bgm_path_prefers_exact_bgm_mp3(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            assets_dir = Path(tmp) / "assets"
+            assets_dir.mkdir()
+            exact_bgm_path = assets_dir / "bgm.mp3"
+            other_bgm_path = assets_dir / "other.mp3"
+            exact_bgm_path.write_bytes(b"exact fake mp3")
+            other_bgm_path.write_bytes(b"other fake mp3")
+
+            self.assertEqual(make_short.choose_bgm_path(assets_dir), exact_bgm_path)
+
     def test_create_sample_csv_writes_expected_columns_and_example(self):
         with tempfile.TemporaryDirectory() as tmp:
             csv_path = Path(tmp) / "records.csv"
