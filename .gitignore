@@ -7,6 +7,11 @@ records/records.csv
 
 # Optional local assets
 assets/*.mp3
+assets/*.wav
+assets/*.m4a
+assets/*.aac
+assets/*.flac
+assets/*.ogg
 assets/*.ttf
 
 # Python cache

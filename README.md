@@ -200,15 +200,23 @@ day,date,map,time,end_meso,drops,memo,video_file
 
 ## BGM 넣기
 
-BGM을 넣고 싶으면 `assets` 폴더에 아래 이름으로 파일을 넣습니다.
+BGM을 넣고 싶으면 `assets` 폴더에 오디오 파일을 넣습니다.
 
 ```text
-assets/bgm.mp3
+assets/bgm1.mp3
+assets/bgm2.wav
+assets/chill.m4a
 ```
 
-파일이 있으면 자동으로 BGM을 넣고, 없으면 원본 영상 소리만 사용합니다.
+오디오 파일이 여러 개 있으면 실행할 때마다 그중 하나를 랜덤으로 골라 BGM으로 넣습니다.
 
-Windows에서 확장자가 숨겨져 있으면 파일명이 `bgm.mp3.mp3`처럼 저장될 수 있습니다. 이 경우에도 `assets` 폴더에 MP3 파일이 하나만 있으면 자동으로 BGM으로 인식합니다.
+지원하는 확장자:
+
+```text
+.mp3, .wav, .m4a, .aac, .flac, .ogg
+```
+
+`font.ttf` 같은 비오디오 파일은 무시합니다. 오디오 파일이 없으면 원본 영상 소리만 사용합니다.
 
 ## 한글 폰트 바꾸기
 

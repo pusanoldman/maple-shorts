@@ -22,6 +22,7 @@ DEFAULT_KOREAN_FONT = Path(r"C:\Windows\Fonts\malgun.ttf")
 # - 뒤 5초: 원본 영상의 마지막 5초
 RANDOM_CLIP_SECONDS = 5.0
 ENDING_CLIP_SECONDS = 5.0
+AUDIO_EXTENSIONS = {".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg"}
 
 # 처음 records.csv 를 만들 때 사용할 기본 컬럼입니다.
 # 나중에 start_time, duration 컬럼을 CSV에 직접 추가해도 코드가 읽을 수 있습니다.
@@ -221,21 +222,21 @@ def choose_font_path(assets_dir):
     return DEFAULT_KOREAN_FONT
 
 
-def choose_bgm_path(assets_dir):
+def choose_bgm_path(assets_dir, rng=None):
     """
     BGM 파일 경로를 고릅니다.
 
-    기본은 assets/bgm.mp3 입니다.
-    다만 Windows에서 확장자 숨김 상태로 이름을 바꾸면 bgm.mp3.mp3처럼 저장되는 경우가 있어,
-    정확한 bgm.mp3가 없어도 assets 폴더에 mp3가 하나뿐이면 그 파일을 BGM으로 사용합니다.
+    assets 폴더 안에서 지원되는 오디오 파일을 모두 찾고 그중 하나를 랜덤으로 사용합니다.
+    font.ttf 같은 비오디오 파일은 무시합니다.
     """
-    exact_bgm = assets_dir / "bgm.mp3"
-    if exact_bgm.exists():
-        return exact_bgm
-
-    mp3_files = sorted(assets_dir.glob("*.mp3"))
-    if len(mp3_files) == 1:
-        return mp3_files[0]
+    rng = rng or random
+    audio_files = sorted(
+        file
+        for file in assets_dir.iterdir()
+        if file.is_file() and file.suffix.lower() in AUDIO_EXTENSIONS
+    )
+    if audio_files:
+        return rng.choice(audio_files)
 
     return None
 
@@ -498,11 +499,6 @@ def process_records():
 
     font_path = choose_font_path(ASSETS_DIR)
     bgm_path = choose_bgm_path(ASSETS_DIR)
-
-    if bgm_path:
-        print(f"[안내] BGM 사용: {bgm_path.name}")
-    else:
-        print("[안내] BGM 없음: 원본 영상 소리만 사용합니다.")
 
     records = read_records(RECORDS_CSV)
     if not records:

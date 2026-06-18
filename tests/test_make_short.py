@@ -91,16 +91,33 @@ class MapleShortsTests(unittest.TestCase):
 
             self.assertEqual(make_short.choose_bgm_path(assets_dir), bgm_path)
 
-    def test_choose_bgm_path_prefers_exact_bgm_mp3(self):
+    def test_choose_bgm_path_randomly_selects_supported_audio_and_ignores_other_assets(self):
         with tempfile.TemporaryDirectory() as tmp:
             assets_dir = Path(tmp) / "assets"
             assets_dir.mkdir()
-            exact_bgm_path = assets_dir / "bgm.mp3"
-            other_bgm_path = assets_dir / "other.mp3"
-            exact_bgm_path.write_bytes(b"exact fake mp3")
-            other_bgm_path.write_bytes(b"other fake mp3")
+            first_bgm = assets_dir / "first.mp3"
+            second_bgm = assets_dir / "second.wav"
+            font_file = assets_dir / "font.ttf"
+            first_bgm.write_bytes(b"first fake audio")
+            second_bgm.write_bytes(b"second fake audio")
+            font_file.write_bytes(b"fake font")
 
-            self.assertEqual(make_short.choose_bgm_path(assets_dir), exact_bgm_path)
+            class LastChoice:
+                def choice(self, items):
+                    return items[-1]
+
+            self.assertEqual(
+                make_short.choose_bgm_path(assets_dir, rng=LastChoice()),
+                second_bgm,
+            )
+
+    def test_choose_bgm_path_returns_none_when_assets_has_no_audio(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            assets_dir = Path(tmp) / "assets"
+            assets_dir.mkdir()
+            (assets_dir / "font.ttf").write_bytes(b"fake font")
+
+            self.assertIsNone(make_short.choose_bgm_path(assets_dir))
 
     def test_create_sample_csv_writes_expected_columns_and_example(self):
         with tempfile.TemporaryDirectory() as tmp:
