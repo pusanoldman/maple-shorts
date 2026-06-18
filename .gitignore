@@ -1,0 +1,24 @@
+# Local videos and generated results
+raw_video/*
+output/*
+
+# Personal records
+records/records.csv
+
+# Optional local assets
+assets/*.mp3
+assets/*.ttf
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Test/runtime cache
+.pytest_cache/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
